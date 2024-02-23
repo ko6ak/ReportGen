@@ -6,6 +6,10 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -15,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Tag(name = "CSVReport", description = "Сохранение объекта в csv-файл")
 public class CSVReport<T> implements Report {
     public static final Path DEFAULT_FILE_PATH = Paths.get(System.getProperty("user.home") + "\\" + "result.csv");
 
@@ -33,6 +38,14 @@ public class CSVReport<T> implements Report {
         this.settings = settings;
     }
 
+    @Operation(summary = "Генерирует csv-файл",
+            responses = {
+                    @ApiResponse(description = "Сохраняет объект в файл", content = @Content(mediaType = "csv-файл")),
+                    @ApiResponse(description = "Выводит ошибку \"Empty list or list contain null.\" " +
+                            "в консоль если входящий список объектов пуст или содержит null",
+                            content = @Content(mediaType = "String"))
+            }
+    )
     @Override
     public void generate() {
         if (list.isEmpty() || list.contains(null)) {
